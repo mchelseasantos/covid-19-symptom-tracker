@@ -1,0 +1,2 @@
+class DaySymptomsController < ApplicationController
+end

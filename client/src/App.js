@@ -1,23 +1,32 @@
-import logo from './logo.svg';
+import React, {useState} from "react";
 import './App.css';
+import 'semantic-ui-css/semantic.min.css';
+import Signup from "./Signup";
+import Login from "./Login";
+import Home from "./Home";
+import {
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
 
 function App() {
+  const [user, setUser] = useState("")
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Covid-19 Symptom Tracker</h1>
+      <Switch>
+          <Route path="/signup">
+            <Signup setUser={setUser} />
+          </Route>
+          <Route path="/login">
+            <Login path="/login" />
+          </Route>
+           <Route path="/">
+            <Home />
+          </Route> 
+        </Switch>
     </div>
   );
 }
