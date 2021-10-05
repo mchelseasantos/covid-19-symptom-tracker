@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import { Button, Checkbox, Form } from 'semantic-ui-react';
+import { Button, Form } from 'semantic-ui-react';
 import {useHistory} from "react-router-dom";
 
 function Login({path}){
@@ -19,6 +19,7 @@ const [password, setPassword] = useState("")
         .then(response => response.json())
         .then(data => {
             if (!data.error) {
+                localStorage.setItem('user_id', data.id);
                 history.push("/") 
             }
         });
@@ -26,12 +27,12 @@ const [password, setPassword] = useState("")
 
     return(
         <Form onSubmit={handleSubmit}>
-            <Form.Field>
-                <label>Username</label>
+            <Form.Field className="usernameForm">
+                <label className="username">Username</label>
                 <input value={username} onChange={(e)=>setUsername(e.target.value)} placeholder='Username' />
             </Form.Field>
-            <Form.Field>
-                <label>Password</label>
+            <Form.Field className="passwordForm">
+                <label className="password">Password</label>
                 <input type="password" value={password} onChange={(e)=>setPassword(e.target.value)} placeholder='Password' />
             </Form.Field>
             <Button type='submit'>Submit</Button>

@@ -7,15 +7,25 @@ import Home from "./Home";
 import {
   Switch,
   Route,
-  Link
 } from "react-router-dom";
 
 function App() {
-  const [user, setUser] = useState("")
+  const [user, setUser] = useState('')
+  const [notes, setNotes] = useState('')
+
+  function addNote(text){
+    const date = new Date();
+    const newNote = {
+      text: text, 
+      date: date.toLocaleDateString()
+    }
+    const newNotes = [...notes, newNote];
+    setNotes(newNotes);
+  };
 
   return (
     <div className="App">
-      <h1>Covid-19 Symptom Tracker</h1>
+      <h1 className="title">COVID-19 Symptom Tracker</h1>
       <Switch>
           <Route path="/signup">
             <Signup setUser={setUser} />
@@ -24,7 +34,7 @@ function App() {
             <Login path="/login" />
           </Route>
            <Route path="/">
-            <Home />
+            <Home notes={notes} handleAddNote={addNote} />
           </Route> 
         </Switch>
     </div>

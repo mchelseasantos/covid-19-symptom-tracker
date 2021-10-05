@@ -11,3 +11,36 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.title{
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.usernameForm{
+  width: 500px;
+}
+
+.username{
+  font-size: 100px;
+}
+
+.passwordForm{
+  width: 500px;
+}
+
+.password{
+  font-size: 100px;
+}
+
+.symptomTypes{
+  background-color: lightgrey;
+  color: blue;
+  text-align: center;
+  font-size: 25px;
+}
+
+.cardContainer{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}

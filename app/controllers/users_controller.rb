@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-rescue_from ActiveRecord::RecordInvalid, with: :render_unprocessable_enitity_response
+rescue_from ActiveRecord::RecordInvalid, with: :render_unprocessable_entity_response
 skip_before_action :authorize, only: :create
 
     def create
@@ -18,7 +18,7 @@ skip_before_action :authorize, only: :create
         params.permit(:username, :password)
     end
 
-    def render_unprocessable_enitity_response(invalid)
+    def render_unprocessable_entity_response(invalid)
         render json: {errors: invalid.record.errors}, status: :unprocessable_entity
     end
 

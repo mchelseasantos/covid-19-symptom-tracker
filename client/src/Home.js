@@ -1,159 +1,185 @@
 import React, {useEffect, useState} from "react";
-import {useHistory} from "react-router-dom"; 
-import { Button, Image, List } from 'semantic-ui-react'
+import { Button, List, Card, Form } from 'semantic-ui-react'
 
-function Home(){
-const history = useHistory()
-const [date, setDate] = useState("")
-const [temperature, setTemperature] = useState("")
-const [blood_pressure, setBlood_pressure] = useState("")
-const [heart_rate, setHeart_rate] = useState("")
+function Home({ handleAddNote }){
+const [symptomTypes, setSymptomTypes] = useState([])
+const [symptoms, setSymptoms] = useState([])
+const [chosenSymptoms, setChosenSymptoms] = useState([])
+const [notes, setNotes] = useState('')
+const [date, setDate] = useState('')
+const [bloodPressure,setBloodPressure] = useState('')
+const [temperature, setTemperature] = useState('')
+const [heartRate, setHeartRate] = useState('')
 
-    useEffect(() => { //useEffect with empty dependency array 
-        
-        fetch("http://localhost:3001/home", { //fetch request to hit index method action of Day controller
+    useEffect(() => { 
+        fetch("/symptom_types", { 
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
             },
-            // body: JSON.stringify({date, temperature, blood_pressure, heart_rate}),
         })
         .then(response => response.json())
         .then(data => {
-            console.log(data)
-            if (!data.error) { //call setUser function and pass in data
-                history.push("/") 
+            if (!data.error) { 
+              setSymptomTypes(data)
             }
         });
+    },[]);
 
-      },[]);
+    function onFormSubmit(e){
+        e.preventDefault()
+        const vitalSigns = {
+            user_id: localStorage.getItem('user_id'),
+            date: date, 
+            temperature: temperature, 
+            blood_pressure: bloodPressure, 
+            heart_rate: heartRate,
+            notes: notes,
+            // day_symptoms_attributes: {
 
-      return (
-        <List divided verticalAlign='middle'>
+            // }
+        }
+        fetch('/days',{
+            method: 'POST',
+            headers:{
+                'Content-Type': 'application/json'},
+            body: JSON.stringify(vitalSigns)
+        })
+            .then(response => response.json())
+            .then(data => console.log(data));
+    };
 
-    <List>Respiratory Symptoms</List>
-        <br></br>
-          <List.Item>
-            <List.Content floated='right'>
-              <Button>Add</Button>
-            </List.Content>
-            <List.Content>Cough</List.Content>
-          </List.Item>
-       
-          <List.Item>
-            <List.Content floated='right'>
-              <Button>Add</Button>
-            </List.Content>
-            <List.Content>Congestion</List.Content>
-          </List.Item>
+    function renderSymptomTypes(){
+        return symptomTypes.map((symptomType) => {
+            return(
+            <>
+            <Card className="cardContainer">
+            <List key={symptomType.description} className="symptomTypes">{symptomType.description}</List>
+            {renderSymptoms(symptomType.symptoms)}
+            </Card>
+            </>
+            )
+        })
+    }
 
-          <List.Item>
-            <List.Content floated='right'>
-              <Button>Add</Button>
-            </List.Content>
-            <List.Content>Sore Throat</List.Content>
-          </List.Item>
+    function renderSymptoms(symptoms){
+        return symptoms.map((symptom) => {
+            return(
+                <>
+                <List.Item>
+                    <List.Content floated='right'>
+                        <Button id={symptom.id} onClick={(e) => onAddClick(e, symptom.description)}>Add</Button>
+                    </List.Content>
+                <List key={symptom.description}>{symptom.description}</List>
+                </List.Item>
+                </>
+            )
+        })
 
-          <List.Item>
-            <List.Content floated='right'>
-              <Button>Add</Button>
-            </List.Content>
-            <List.Content>Shortness of Breath</List.Content>
-          </List.Item>
+    }
 
-          <List.Item>
-            <List.Content floated='right'>
-              <Button>Add</Button>
-            </List.Content>
-            <List.Content>Chest Discomfort</List.Content>
-          </List.Item>
+    function renderChosenSymptoms(){
+        return chosenSymptoms.map((symptom) => {
+            return(
+                <List.Item>
+                    <List.Content floated='right'>
+                        <List>{symptom.description}</List>
+                    </List.Content>
+                </List.Item>
+            )
+        })
+    }
 
-    <List>Sensory Symptoms</List>
-        <br></br>
-          <List.Item>
-            <List.Content floated='right'>
-              <Button>Add</Button>
-            </List.Content>
-            <List.Content>Lack of Smell</List.Content>
-          </List.Item>
+    function onAddClick(e, description){
+        fetch('/symptoms',{
+            method: 'POST',
+            headers:{
+                'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                "symptom_type_id": e.target.id,
+                "description": "",
+            })
+        })
+            .then(response => response.json())
+            .then(data => console.log(data));
+        
+        const filteredSymptoms =
+        symptoms.filter(symptom => symptom.id !== e.target.id);
+            setSymptoms(filteredSymptoms);
+            setChosenSymptoms(chosen => 
+                [...chosen, description]);
+    };
 
-          <List.Item>
-            <List.Content floated='right'>
-              <Button>Add</Button>
-            </List.Content>
-            <List.Content>Lack of Taste</List.Content>
-          </List.Item>
+    function onRemoveClick(e){
+        const filteredSymptoms = chosenSymptoms.filter(symptom => symptom !== e.target.id);
+        setChosenSymptoms(filteredSymptoms);
+        setSymptoms(symptoms => [...symptoms, e.target.id]);
+    };
 
-    <List>Full Body Symptoms</List>
-        <br></br>
-          <List.Item>
-            <List.Content floated='right'>
-              <Button>Add</Button>
-            </List.Content>
-            <List.Content>Fatigue</List.Content>
-          </List.Item>
+    function handleChange(e){
+        e.preventDefault();
+        setNotes(e.target.value);
+    };
 
-          <List.Item>
-            <List.Content floated='right'>
-              <Button>Add</Button>
-            </List.Content>
-            <List.Content>Body Aches</List.Content>
-          </List.Item>
+    function handleSaveClick(e){
+        handleAddNote(notes)
+    };
 
-          <List.Item>
-            <List.Content floated='right'>
-              <Button>Add</Button>
-            </List.Content>
-            <List.Content>Chills</List.Content>
-          </List.Item>
+    return (
+    <>
+    <List 
+        divided verticalAlign='middle'>
+        {renderSymptomTypes()}
+    </List>
+    
+    <Form>
+        {chosenSymptoms.map(symptom => (
+        <>
+        <p>{symptom}</p>
+        <Button id={symptom} onClick={onRemoveClick}>Remove</Button>
+        </>
+        ))}
+   </Form> 
+    
+    <Form>
+        {renderChosenSymptoms()}
+    </Form>
 
-    <List>Neuro Symptoms</List>
-        <br></br>
-          <List.Item>
-            <List.Content floated='right'>
-              <Button>Add</Button>
-            </List.Content>
-            <List.Content>Headaches</List.Content>
-          </List.Item>
+    <Form onSubmit={onFormSubmit}>
+        <h1>Vital Signs</h1>
+        <input 
+        placeholder="date" 
+        type="date"
+        value={date} 
+        onChange={e => setDate(e.target.value)}
+        />
+        <input 
+        placeholder="blood pressure" 
+        value={bloodPressure} 
+        onChange={e => setBloodPressure(e.target.value)}
+        />
+        <input 
+        placeholder="temperature" 
+        value={temperature} 
+        onChange={e => setTemperature(e.target.value)}
+        />
+        <input 
+        placeholder="heart rate" 
+        value={heartRate} 
+        onChange={e => setHeartRate(e.target.value)}
+        />
 
-          <List.Item>
-            <List.Content floated='right'>
-              <Button>Add</Button>
-            </List.Content>
-            <List.Content>Confusion</List.Content>
-          </List.Item> 
+        <textarea 
+            className="notes"
+            placeholder='Notes'
+            value={notes}
+            onChange={handleSaveClick}
+        ></textarea>
+        <Button type='submit'>Submit</Button>
+    </Form>
+    </>
+    )
 
-          <List.Item>
-            <List.Content floated='right'>
-              <Button>Add</Button>
-            </List.Content>
-            <List.Content>Headaches</List.Content>
-          </List.Item> 
-
-    <List>Gastrointestinal Symptoms</List>
-        <br></br>
-          <List.Item>
-            <List.Content floated='right'>
-              <Button>Add</Button>
-            </List.Content>
-            <List.Content>Nausea</List.Content>
-          </List.Item>
-
-          <List.Item>
-            <List.Content floated='right'>
-              <Button>Add</Button>
-            </List.Content>
-            <List.Content>Vomiting</List.Content>
-          </List.Item>
-
-          <List.Item>
-            <List.Content floated='right'>
-              <Button>Add</Button>
-            </List.Content>
-            <List.Content>Diarrhea</List.Content>
-          </List.Item>
-        </List>
-      )
 }
 
 export default Home;

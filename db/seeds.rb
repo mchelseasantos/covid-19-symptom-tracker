@@ -8,29 +8,37 @@
 
 User.destroy_all
 Day.destroy_all
+SymptomType.destroy_all
 Symptom.destroy_all
 DaySymptom.destroy_all
 
 user = User.create(username:"Chelsea1", password: "flowers123")
 
-30.times.do
-Day.create(user_id: user.id, date: Faker::Date.between(from: '2021-09-14', to: '2021-12-31'), temperature: "98.7 F", blood_pressure: "120/80", heart_rate: "60 bpm" )
+30.times do
+    Day.create(user_id: user.id, date: Faker::Date.between(from: '2021-09-14', to: '2021-12-31'), temperature: "98.7 F", blood_pressure: "120/80", heart_rate: "60 bpm")
 end
 
-Symptom.create(description: "cough")
-Symptom.create(description: "chills")
-Symptom.create(description: "congestion")
-Symptom.create(description: "sore throat")
-Symptom.create(description: "shortness of breath")
-Symptom.create(description: "chest discomfort")
-Symptom.create(description: "lack of smell")
-Symptom.create(description: "lack of taste")
-Symptom.create(description: "fatigue")
-Symptom.create(description: "muscle or body aches")
-Symptom.create(description: "headache")
-Symptom.create(description: "forgetfullness or confusion")
-Symptom.create(description: "nausea or vomiting")
-Symptom.create(description: "diarrhea")
+rs = SymptomType.create(description: "Respiratory Symptoms")
+ss = SymptomType.create(description: "Sensory Symptoms")
+ns = SymptomType.create(description: "Neuro Symptoms")
+fbs = SymptomType.create(description: "Full Body Symptoms")
+gs = SymptomType.create(description: "Gastrointestinal Symptoms")
 
-DaySymptom.create(day_id: Day.all.sample.id, symptom_id: Symptom.all.sample.id, severity: rand(1..5))
+Symptom.create(description: "cough", symptom_type: rs)
+Symptom.create(description: "chills", symptom_type: fbs)
+Symptom.create(description: "congestion", symptom_type: rs)
+Symptom.create(description: "sore throat", symptom_type: rs)
+Symptom.create(description: "shortness of breath", symptom_type: rs)
+Symptom.create(description: "chest discomfort", symptom_type: rs)
+Symptom.create(description: "lack of smell", symptom_type: ss)
+Symptom.create(description: "lack of taste", symptom_type: ss)
+Symptom.create(description: "fatigue", symptom_type: fbs)
+Symptom.create(description: "muscle or body aches", symptom_type: fbs)
+Symptom.create(description: "headache", symptom_type: ns)
+Symptom.create(description: "forgetfullness or confusion", symptom_type: ns)
+Symptom.create(description: "nausea", symptom_type: gs)
+Symptom.create(description: "vomiting", symptom_type: gs)
+Symptom.create(description: "diarrhea", symptom_type: gs)
+
+DaySymptom.create(day_id: Day.all.sample.id, symptom_type_id: SymptomType.all.sample.id, severity: rand(1..5))
 

@@ -9,7 +9,7 @@ const history = useHistory()
     
     function handleSubmit(e){ 
         e.preventDefault()
-        fetch('http://localhost:3000/users', {
+        fetch('/users', {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -18,8 +18,10 @@ const history = useHistory()
         })
         .then(response => response.json())
         .then(data => {
+            console.log(data)
             if (!data.error) { 
                 setUser(data)
+                localStorage.setItem('user_id', data.id);
                 history.push("/") 
             }
         });
@@ -27,12 +29,12 @@ const history = useHistory()
 
     return(
         <Form onSubmit={handleSubmit}>
-            <Form.Field>
-                <label>Username</label>
+            <Form.Field className="usernameForm">
+                <label className="username">Username</label>
                 <input value={username} onChange={(e)=>setUsername(e.target.value)} placeholder='Username' />
             </Form.Field>
-            <Form.Field>
-                <label>Password</label>
+            <Form.Field className="passwordForm">
+                <label className="password">Password</label>
                 <input type="password" value={password} onChange={(e)=>setPassword(e.target.value)} placeholder='Password' />
             </Form.Field>
             <Form.Field>

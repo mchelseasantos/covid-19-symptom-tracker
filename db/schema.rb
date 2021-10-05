@@ -10,19 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_14_163842) do
+ActiveRecord::Schema.define(version: 2021_09_16_172859) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "day_symptoms", force: :cascade do |t|
     t.bigint "day_id", null: false
-    t.bigint "symptom_id", null: false
+    t.bigint "symptom_type_id", null: false
     t.integer "severity"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["day_id"], name: "index_day_symptoms_on_day_id"
-    t.index ["symptom_id"], name: "index_day_symptoms_on_symptom_id"
+    t.index ["symptom_type_id"], name: "index_day_symptoms_on_symptom_type_id"
   end
 
   create_table "days", force: :cascade do |t|
@@ -36,10 +36,18 @@ ActiveRecord::Schema.define(version: 2021_09_14_163842) do
     t.index ["user_id"], name: "index_days_on_user_id"
   end
 
+  create_table "symptom_types", force: :cascade do |t|
+    t.string "description"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "symptoms", force: :cascade do |t|
     t.string "description"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.bigint "symptom_type_id"
+    t.index ["symptom_type_id"], name: "index_symptoms_on_symptom_type_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -50,6 +58,7 @@ ActiveRecord::Schema.define(version: 2021_09_14_163842) do
   end
 
   add_foreign_key "day_symptoms", "days"
-  add_foreign_key "day_symptoms", "symptoms"
+  add_foreign_key "day_symptoms", "symptom_types"
   add_foreign_key "days", "users"
+  add_foreign_key "symptoms", "symptom_types"
 end
